@@ -133,7 +133,8 @@ document.addEventListener("DOMContentLoaded", e => {
         const monsterObj = {
             name: target.name.value,
             age: target.age.value,
-            description: target.description.value
+            description: target.description.value,
+            likes: 0
         }
         target.reset()
         return monsterObj
