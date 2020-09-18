@@ -25,11 +25,18 @@ document.addEventListener("DOMContentLoaded", e => {
         const monstersContainer = document.querySelector("#monster-container")
         const monsterDiv = document.createElement('div')
         monsterDiv.dataset.monsterId = monster.id
+        if(monster.likes){
+            monster.likes
+        } else {
+            monster.likes = 0
+        }
         monsterDiv.innerHTML = `
             <p>
                 <h3>Name: ${monster.name}</h3>
                 <h3>Age: ${monster.age}</h3>
                 <h3>Description: ${monster.description}</h3>
+                <h4 class="likes">${monster.likes}</h4>
+                <button class = "like-button" type="button">Like!</button>
             </p>
         `
         monstersContainer.append(monsterDiv)
@@ -77,20 +84,8 @@ document.addEventListener("DOMContentLoaded", e => {
 
         })
     }
-    
-    // create monster object from data submitted in form 
 
-    const createMonsterObj = target => {
-        const monsterObj = {
-            name: target.name.value,
-            age: target.age.value,
-            description: target.description.value
-        }
-        target.reset()
-        return monsterObj
-    }
-
-    // click handler for back and forward buttons
+        // click handler for back and forward buttons
     
     const clickHandler = () => {
         document.addEventListener('click', e => {
@@ -104,11 +99,48 @@ document.addEventListener("DOMContentLoaded", e => {
             } else if(e.target.matches("#forward")){
                     pageNumber += 1
                     fetchNewPage(monstersUrl, pageNumber)
+            } else if(e.target.matches('.like-button')){
+                    const likeEl = e.target.parentElement.querySelector('.likes')
+                    const likes = parseInt(likeEl.textContent)
+                    const monsterId = e.target.parentElement.dataset.monsterId
+                    const likesObj = {
+                        likes: likes + 1
+                    }
+                    const options = {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify(likesObj)
+                    };
+                    fetch(`http://localhost:3000/monsters/${monsterId}`, options)
+                    .then(response => response.json())
+                    .then(monster => {
+                        //change conternt on dom call likes from db
+                        likeEl.textContent = `${monster.likes} likes`
+                    })
+                //take whats on the screen and send back to the database that number plus one
+                //update db first, render the new display second
             }
         })
     }
+        
     
+    // create monster object from data submitted in form 
+
+    const createMonsterObj = target => {
+        const monsterObj = {
+            name: target.name.value,
+            age: target.age.value,
+            description: target.description.value
+        }
+        target.reset()
+        return monsterObj
+    }
+
     // resets page data and re renders
+
     const reRenderPage = monsters => {
         const monstersDiv = document.querySelector('#monster-container')
         monstersDiv.innerHTML = ""
