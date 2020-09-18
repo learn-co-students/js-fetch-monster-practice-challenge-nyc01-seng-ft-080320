@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", e => {
-    let monstersUrl = "http://localhost:3000/monsters/?_limit=50&_page=1"
+    let monstersUrl = "http://localhost:3000/monsters/?_limit=50&_page="
+    let pageNumber = 1
 
     const getMonsters = () => {
-        fetch(monstersUrl)
+        fetch(monstersUrl+pageNumber)
         .then(response => response.json())
         .then(monsters => {
             renderMonsters(monsters)
@@ -58,7 +59,7 @@ document.addEventListener("DOMContentLoaded", e => {
         document.addEventListener('submit', e => {
             e.preventDefault()
             if(e.target.matches('#new-monster-form')){
-                const monsterObj = createMonster(e.target)
+                const monsterObj = createMonsterObj(e.target)
                 const options = {
                     method: 'POST',
                     headers: {
@@ -79,7 +80,7 @@ document.addEventListener("DOMContentLoaded", e => {
     
     // create monster object from data submitted in form 
 
-    const createMonster = target => {
+    const createMonsterObj = target => {
         const monsterObj = {
             name: target.name.value,
             age: target.age.value,
@@ -90,22 +91,24 @@ document.addEventListener("DOMContentLoaded", e => {
     }
 
     // click handler for back and forward buttons
-    let pageNumber = 1
+    
     const clickHandler = () => {
         document.addEventListener('click', e => {
-            let url = "http://localhost:3000/monsters/?_limit=50&_page="
             if(e.target.matches("#back")){
-                pageNumber -= 1
-                fetchNewPage(url, pageNumber)
+                if(pageNumber > 0){
+                    pageNumber -= 1
+                    fetchNewPage(monstersUrl, pageNumber)
+                } else {
+                    pageNumber = 1
+                }
             } else if(e.target.matches("#forward")){
-                pageNumber += 1
-                fetchNewPage(url, pageNumber)
+                    pageNumber += 1
+                    fetchNewPage(monstersUrl, pageNumber)
             }
-               
         })
     }
     
-    // resets page and re renders whe
+    // resets page data and re renders
     const reRenderPage = monsters => {
         const monstersDiv = document.querySelector('#monster-container')
         monstersDiv.innerHTML = ""
