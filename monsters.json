@@ -6005,6 +6005,42 @@
       "age": 13,
       "description": "131313",
       "id": 1001
+    },
+    {
+      "id": 1002
+    },
+    {
+      "id": 1003
+    },
+    {
+      "name": "newMonster",
+      "age": "12345",
+      "description": "trying to add a new monster to API",
+      "id": 1004
+    },
+    {
+      "name": "newer",
+      "age": "125.7890",
+      "description": "this is the weirdest monster of all times",
+      "id": 1005
+    },
+    {
+      "name": "VATBOT",
+      "age": "1234",
+      "description": "Covering the amount to close the account",
+      "id": 1006
+    },
+    {
+      "name": "",
+      "age": "",
+      "description": "",
+      "id": 1007
+    },
+    {
+      "name": "Monssssssiii",
+      "age": "1234.345",
+      "description": "this is the last test",
+      "id": 1008
     }
   ]
 }
