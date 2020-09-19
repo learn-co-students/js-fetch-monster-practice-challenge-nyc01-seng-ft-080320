@@ -36,7 +36,10 @@ document.addEventListener("DOMContentLoaded", e => {
                 <h3>Age: ${monster.age}</h3>
                 <h3>Description: ${monster.description}</h3>
                 <h4 class="likes">${monster.likes}</h4>
-                <button class = "like-button" type="button">Like!</button>
+                <span>
+                    <button class = "like-button" type="button">Like!</button>
+                    <button class = "delete-button" type="button">Delete!</button>
+                </span>
             </p>
         `
         monstersContainer.append(monsterDiv)
@@ -100,43 +103,66 @@ document.addEventListener("DOMContentLoaded", e => {
                     pageNumber += 1
                     fetchNewPage(monstersUrl, pageNumber)
             } else if(e.target.matches('.like-button')){
-                    const likeEl = e.target.parentElement.querySelector('.likes')
-                    const likes = parseInt(likeEl.textContent)
-                    const monsterId = e.target.parentElement.dataset.monsterId
-                    const likesObj = {
-                        likes: likes + 1
-                    }
-                    const options = {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify(likesObj)
-                    };
-                    fetch(`http://localhost:3000/monsters/${monsterId}`, options)
-                    .then(response => response.json())
-                    .then(monster => {
-                        //change conternt on dom call likes from db
-                        likeEl.textContent = `${monster.likes} likes`
-                    })
-                //take whats on the screen and send back to the database that number plus one
-                //update db first, render the new display second
+                    updateLikes(e.target)
+            } else if(e.target.matches(".delete-button")){
+                    deleteMonster(e.target)
+
             }
         })
     }
-        
-    
+
+      // delete monster from DB and then DOM 
+
+    const deleteMonster = (target) => {
+        const monsterDiv = target.closest('div')
+        const monsterId = monsterDiv.dataset.monsterId
+        const options = {
+            method: "DELETE"
+        }
+        fetch(`http://localhost:3000/monsters/${monsterId}`, options)
+        .then(response => response.json())
+        .then(() => {
+            monsterDiv.remove()
+        })
+        .catch(error => {
+            alert(error)
+        })
+    }
+
+    // update likes in DB then on DOM
+
+    const updateLikes = (target) => {
+        const monsterDiv = target.closest('div')
+        const likeEl = monsterDiv.querySelector('h4')
+        const likes = parseInt(likeEl.textContent)
+        const monsterId = monsterDiv.dataset.monsterId
+        const likesObj = {
+            likes: likes + 1
+        }
+        const options = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(likesObj)
+        };
+        fetch(`http://localhost:3000/monsters/${monsterId}`, options)
+        .then(response => response.json())
+        .then(monster => {
+            likeEl.textContent = `${monster.likes} likes`
+        })
+    }
     // create monster object from data submitted in form 
 
-    const createMonsterObj = target => {
+    const createMonsterObj = form => {
         const monsterObj = {
-            name: target.name.value,
-            age: target.age.value,
-            description: target.description.value,
+            name: form.name.value,
+            age: form.age.value,
+            description: form.description.value,
             likes: 0
         }
-        target.reset()
+        form.reset()
         return monsterObj
     }
 
