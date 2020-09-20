@@ -58,12 +58,62 @@ const formHandler = () => {
     const monsterDiv = document.querySelector("#create-monster")
     monsterDiv.appendChild(form)
     
-    console.log("monsterDiv:", monsterDiv)
+    
 }
 
+const submitForm = () => {
+    const form = document.querySelector('form')
+    
+    form.addEventListener('submit', e => {
+        e.preventDefault()
+        const name = e.target.name.value
+        const age = e.target.age.value
+        const description = e.target.bio.value
+        
+        const monsterInfo = {
+            name: name,
+            age: age,
+            description: description
+        }
+        
+        addMonster(monsterInfo)
 
+    })
+}
+
+const addMonster = info => {
+let baseUrl = `http://localhost:3000/monsters/?_limit=50&_page=${pageNumber}`  
+    
+    options = {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+        },
+        body: JSON.stringify(info)
+    }
+    
+    fetch(baseUrl, options)
+    .then(response => response.json())
+    .then(data => { createSingleMonster(data)
+
+    })
+}
+
+const createSingleMonster = monster => {
+    let monDiv = document.createElement("div")
+        monDiv.dataset.id = monster.id
+        monDiv.innerHTML = `
+            <h1>${monster.name}</h1>
+            <p>${monster.age}</p>
+            ${monster.description}
+        `
+    const monsterContainer = document.querySelector("#monster-container")
+    monsterContainer.appendChild(monDiv)
+}
 
 fetchUrl(pageNumber)
 clickHandler()
 formHandler()
+submitForm()
 })
